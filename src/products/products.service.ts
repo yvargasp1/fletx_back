@@ -2,23 +2,25 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoriesService } from 'src/categories/categories.service';
 import { Repository } from 'typeorm';
+import { ProductDTO } from './dto/product.dto';
 import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private productRepo: Repository<Product>,
-    private categoryService : CategoriesService
+    private categoryService: CategoriesService,
   ) {}
-  async create(createProductDto: Product) {
-   const category = await this.categoryService.findOne(createProductDto.category_id)
-   console.log(category)
-   if(!category.length){
-    return new HttpException('Category not found', HttpStatus.NOT_FOUND)
-   }else{
-  
-    return this.productRepo.save(createProductDto)
-   }
+  async create(createProductDto: ProductDTO) {
+    const category = await this.categoryService.findOne(
+      createProductDto.category_id,
+    );
+    console.log(category);
+    if (!category.length) {
+      return new HttpException('Category not found', HttpStatus.NOT_FOUND);
+    } else {
+      return this.productRepo.save(createProductDto);
+    }
   }
 
   findAll() {
@@ -27,13 +29,31 @@ export class ProductsService {
     });
   }
 
-
   findOne(id: number) {
-    return `This action returns a #${id} product`;
+    return this.productRepo.findBy({
+      id: id,
+    });
   }
 
-  update(id: number, updateProductDto: Product) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: ProductDTO) {
+    const category = await this.categoryService.findOne(
+      updateProductDto.category_id,
+    );
+    console.log(category);
+    if (!category.length) {
+      return new HttpException('Category not found', HttpStatus.NOT_FOUND);
+    } else {
+      const product =  await this.findOne(id)
+      if(product){
+        const obj = JSON.parse(JSON.stringify(updateProductDto));
+        console.log(obj, product[0]);
+        return this.productRepo.save({ ...product[0], ...obj });
+      }else{
+          return new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      }
+
+
+    }
   }
 
   remove(id: number) {

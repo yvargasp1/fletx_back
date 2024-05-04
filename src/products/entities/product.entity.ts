@@ -28,4 +28,6 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.product)
   @JoinColumn({ name: 'category_id' })
   category: Category;
+  @Column()
+  image: string;
 }
