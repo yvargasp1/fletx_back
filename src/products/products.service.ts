@@ -29,7 +29,7 @@ export class ProductsService {
     });
   }
 
-  findOne(id: number) {
+   findOne(id: number) {
     return this.productRepo.findBy({
       id: id,
     });
@@ -43,20 +43,26 @@ export class ProductsService {
     if (!category.length) {
       return new HttpException('Category not found', HttpStatus.NOT_FOUND);
     } else {
-      const product =  await this.findOne(id)
-      if(product){
+      const product = await this.findOne(id);
+      if (product.length) {
         const obj = JSON.parse(JSON.stringify(updateProductDto));
         console.log(obj, product[0]);
         return this.productRepo.save({ ...product[0], ...obj });
-      }else{
-          return new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      } else {
+        return new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
-
-
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const product = await this.findOne(id);
+    console.log(product)
+    if (product.length) {
+      this.productRepo.delete({
+        id: id,
+      });
+    } else {
+      return new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

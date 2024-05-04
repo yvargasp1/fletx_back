@@ -1,10 +1,12 @@
 import { Category } from 'src/categories/entities/category.entity';
+import { Sale } from 'src/sales/entities/sale.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 
@@ -28,6 +30,10 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.product)
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @OneToMany(() => Sale, (sale) =>sale.product)
+  sale: Sale[];
+
   @Column()
   image: string;
 }
