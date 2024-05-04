@@ -13,6 +13,14 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  
+  @Post('/photo')
+  @UsePipes(new ValidationPipe() )
+  uploadPhoto(){
+
+  }
+
+
   @Get()
   findAll() {
     return this.productsService.findAll();

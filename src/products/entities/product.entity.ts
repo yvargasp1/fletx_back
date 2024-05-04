@@ -11,21 +11,21 @@ import {
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
-  ID: number;
+  id: number;
   @Column()
-  Fecha_creacion: Date;
+  date_created: Date;
   @Column()
-  Nombre: string;
+  name: string;
   @Column()
-  Precio: number;
+  price: number;
   @Column()
-  Valor: number;
+  value: number;
   @Column()
-  Stock: number;
+  stock: number;
   @Column()
-  categoria_id: number;
+  category_id: number;
 
-  @ManyToOne(() => Category, (categoria) => categoria.productos)
-  @JoinColumn({ name: 'categoria_id' })
+  @ManyToOne(() => Category, (category) => category.product)
+  @JoinColumn({ name: 'category_id' })
   category: Category;
 }

@@ -2,13 +2,13 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class ProductDTO {
-  ID: number;
-  Fecha_creacion: Date;
-  Nombre: string;
+  id: number;
+  date_created: Date;
+  name: string;
   @IsInt()
   @IsNotEmpty()
-  categoria_id: number;
-  Precio: number;
-  Valor: number;
-  Stock: number;
+  category_id: number;
+  price: number;
+  value: number;
+  stock: number;
 }

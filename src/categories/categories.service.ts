@@ -19,7 +19,7 @@ export class CategoriesService {
   async findOne(id: number) {
      
     const category = await this.categoryRepo.findBy({
-      ID : id
+      id : id
     });
 
     return category

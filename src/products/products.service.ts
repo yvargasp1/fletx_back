@@ -11,7 +11,7 @@ export class ProductsService {
     private categoryService : CategoriesService
   ) {}
   async create(createProductDto: Product) {
-   const category = await this.categoryService.findOne(createProductDto.categoria_id)
+   const category = await this.categoryService.findOne(createProductDto.category_id)
    console.log(category)
    if(!category.length){
     return new HttpException('Category not found', HttpStatus.NOT_FOUND)
