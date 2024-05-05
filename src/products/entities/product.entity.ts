@@ -7,8 +7,8 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  IsNull,
 } from 'typeorm';
-
 
 @Entity()
 export class Product {
@@ -21,19 +21,22 @@ export class Product {
   @Column()
   price: number;
   @Column()
-  value: number;
+  value: string;
   @Column()
   stock: number;
   @Column()
   category_id: number;
-
+  @Column()
+  type: string;
   @ManyToOne(() => Category, (category) => category.product)
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
-  @OneToMany(() => Sale, (sale) =>sale.product)
+  @OneToMany(() => Sale, (sale) => sale.product)
   sale: Sale[];
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   image: string;
 }

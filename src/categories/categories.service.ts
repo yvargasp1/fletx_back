@@ -10,7 +10,7 @@ export class CategoriesService {
   ) {}
   create(createCategoryDto: CategoryDTO) {
 
-    this.categoryRepo.save(createCategoryDto)
+   return  this.categoryRepo.save(createCategoryDto)
   }
 
   findAll() {

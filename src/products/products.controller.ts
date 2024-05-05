@@ -43,15 +43,18 @@ export class ProductsController {
     @Body() createProductDto: ProductDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(file.path, createProductDto.category_id);
+
     const newProduct: Product = new Product();
     newProduct.category_id = createProductDto.category_id;
-    newProduct.image = file.path;
+    if(file){
+      newProduct.image = file.path;
+    }
     newProduct.name = createProductDto.name;
     newProduct.price = createProductDto.price;
     newProduct.stock = createProductDto.stock;
     newProduct.value = createProductDto.value;
     newProduct.date_created = createProductDto.date_created;
+    newProduct.type = createProductDto.type;
     return this.productsService.create(newProduct);
   }
 

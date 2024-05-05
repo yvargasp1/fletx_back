@@ -12,7 +12,9 @@ export class ProductDTO {
   @IsNotEmpty()
   price: number;
   @IsNotEmpty()
-  value: number;
+  value: string;
+  @IsNotEmpty()
+  type : string;
   @IsNotEmpty()
   stock: number;
   image: string;
