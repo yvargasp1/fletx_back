@@ -23,16 +23,69 @@ export class ProductsService {
     }
   }
 
-  findAll() {
-    return this.productRepo.find({
-      relations: ['category'],
-    });
+  findAll(sort: any, lte: any, gte: any,category:any) {
+    console.log(sort,lte,gte)
+    if (sort && !lte && !gte) {
+      return this.productRepo
+        .createQueryBuilder('product')
+        .orderBy(`product.${sort}`, 'ASC')
+        .getMany();
+    }
+     if (lte && gte && !sort) {
+       console.log('order gt lt');
+       return this.productRepo
+         .createQueryBuilder('product')
+         .where(`product.price <= :lte`, { lte })
+         .andWhere(`product.price >= :gte`, { gte })
+         .orderBy(`product.price`, 'ASC')
+         .getMany();
+     }
+
+    if (lte && gte && sort && !category)  {
+      console.log('order gt lt')
+      return this.productRepo
+        .createQueryBuilder('product')
+        .where(`product.price <= :lte`, { lte })
+        .andWhere(`product.price >= :gte`, { gte })
+        .orderBy(`product.${sort}`, 'ASC')
+        .getMany();
+    }
+       if (lte && gte && sort && category) {
+         console.log('order category');
+         return this.productRepo
+           .createQueryBuilder('product')
+           .where(`product.price <= :lte`, { lte })
+           .andWhere(`product.price >= :gte`, { gte })
+           .andWhere(`product.category_id = :category`, { category })
+           .orderBy(`product.${sort}`, 'ASC')
+           .getMany();
+       }
+    if (!sort && !lte && !gte) {
+      return this.productRepo.find({
+        relations: ['category'],
+      });
+    }
   }
 
-   findOne(id: number) {
+  findOne(id: number) {
     return this.productRepo.findBy({
       id: id,
     });
+  }
+
+  findByCategory(id: number) {
+    return this.productRepo.find({
+      where: {
+        category_id: id,
+      },
+    });
+  }
+
+  orderBy(sort: string) {
+    return this.productRepo
+      .createQueryBuilder('product')
+      .orderBy(`product.${sort}`, 'ASC')
+      .getMany();
   }
 
   async update(id: number, updateProductDto: ProductDTO) {
@@ -56,7 +109,7 @@ export class ProductsService {
 
   async remove(id: number) {
     const product = await this.findOne(id);
-    console.log(product)
+    console.log(product);
     if (product.length) {
       this.productRepo.delete({
         id: id,

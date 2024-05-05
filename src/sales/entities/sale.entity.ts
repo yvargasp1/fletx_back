@@ -17,9 +17,9 @@ export class Sale {
   date_sale: Date;
   @Column()
   amount: number;
-  @Column()
+  @Column('float')
   price: number;
-  @Column()
+  @Column('float')
   total: number;
   @ManyToOne(() => Product, (product) => product.sale)
   @JoinColumn({ name: 'product_id' })

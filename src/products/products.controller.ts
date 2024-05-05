@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes , ValidationPipe, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes , ValidationPipe, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ProductDTO } from './dto/product.dto';
@@ -43,10 +43,9 @@ export class ProductsController {
     @Body() createProductDto: ProductDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
-
     const newProduct: Product = new Product();
     newProduct.category_id = createProductDto.category_id;
-    if(file){
+    if (file) {
       newProduct.image = file.path;
     }
     newProduct.name = createProductDto.name;
@@ -59,13 +58,26 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query('sort') sort: any , @Query('lte') lte :any ,@Query('gte') gte:any , @Query('category') category:any) {
+    return this.productsService.findAll(sort,lte,gte,category);
+  }
+
+  @Get('/order')
+  orderBy(@Query('sort') sort: any) {
+    return this.productsService.orderBy(sort);
+  }
+  @Get('/order')
+  orderPrice(@Query('sort') sort: any) {
+    return this.productsService.orderBy(sort);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
+  }
+  @Get(':id/category')
+  findCategory(@Param('id') id: string) {
+    return this.productsService.findByCategory(+id);
   }
 
   @Patch(':id')
@@ -94,8 +106,8 @@ export class ProductsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() updateProductDto: Product,
   ) {
-    if(file){
-      updateProductDto.image = file.path
+    if (file) {
+      updateProductDto.image = file.path;
     }
     return this.productsService.update(+id, updateProductDto);
   }

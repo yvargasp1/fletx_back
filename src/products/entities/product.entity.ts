@@ -18,7 +18,7 @@ export class Product {
   date_created: Date;
   @Column()
   name: string;
-  @Column()
+  @Column('float')
   price: number;
   @Column()
   value: string;
