@@ -57,7 +57,10 @@ export class SalesService {
   }
 
   findAll() {
-    return this.saleRepo.find();
+    return this.saleRepo.find({
+      relations: ['product'],
+    });
+
   }
 
   findOne(id: number) {
