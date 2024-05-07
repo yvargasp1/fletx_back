@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsService } from 'src/products/products.service';
 import { Repository } from 'typeorm';
@@ -8,8 +8,9 @@ import { Sale } from './entities/sale.entity';
 @Injectable()
 export class SalesService {
   constructor(
-    @InjectRepository(Sale) private saleRepo: Repository<Sale>,
+    @Inject(forwardRef(() => ProductsService))
     private productService: ProductsService,
+    @InjectRepository(Sale) private saleRepo: Repository<Sale>,
   ) {}
 
   async create(createSaleDto: SaleDTO[]) {
@@ -60,12 +61,16 @@ export class SalesService {
     return this.saleRepo.find({
       relations: ['product'],
     });
-
   }
 
   findOne(id: number) {
     return this.saleRepo.findBy({
       id: id,
+    });
+  }
+  findByProduct(id: number) {
+    return this.saleRepo.findBy({
+      product_id: id,
     });
   }
 

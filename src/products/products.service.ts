@@ -1,13 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoriesService } from 'src/categories/categories.service';
 import { Repository } from 'typeorm';
 import { ProductDTO } from './dto/product.dto';
 import { Product } from './entities/product.entity';
+import { SalesService } from 'src/sales/sales.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject(forwardRef(() => SalesService))
+    private saleService: SalesService,
     @InjectRepository(Product) private productRepo: Repository<Product>,
     private categoryService: CategoriesService,
   ) {}
@@ -25,19 +34,19 @@ export class ProductsService {
 
   findAll(sort: any, category: any, order: any) {
     let categories = [];
-    console.log(order,sort)
+    console.log(order, sort);
     if (category) {
       categories = category.split(',');
       console.log(categories);
     }
     if (sort && !categories.length && order) {
-      if ((order == 'ASC')) {
+      if (order == 'ASC') {
         return this.productRepo
           .createQueryBuilder('product')
           .orderBy(`product.${sort}`, 'ASC')
           .getMany();
       }
-      if ((order == 'DESC')) {
+      if (order == 'DESC') {
         return this.productRepo
           .createQueryBuilder('product')
           .orderBy(`product.${sort}`, 'DESC')
@@ -47,14 +56,14 @@ export class ProductsService {
 
     if (category.length && sort && order) {
       console.log(category, category.length);
-      if ((order == 'ASC')) {
+      if (order == 'ASC') {
         return this.productRepo
           .createQueryBuilder('product')
           .where(`product.category_id IN (:...categories)`, { categories })
           .orderBy(`product.${sort}`, 'ASC')
           .getMany();
       }
-      if ((order == 'DESC')) {
+      if (order == 'DESC') {
         return this.productRepo
           .createQueryBuilder('product')
           .where(`product.category_id IN (:...categories)`, { categories })
@@ -105,14 +114,19 @@ export class ProductsService {
   }
 
   async remove(id: number) {
-    const product = await this.findOne(id);
-    console.log(product);
-    if (product.length) {
-      this.productRepo.delete({
-        id: id,
-      });
+    const product: ProductDTO[] = await this.findOne(id);
+    const sale = await this.saleService.findByProduct(product[0].id);
+    console.log(product, sale);
+    if (sale.length) {
+      return new HttpException('Sale found', HttpStatus.FOUND);
     } else {
-      return new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      if (product.length) {
+       return this.productRepo.delete({
+          id: id,
+        });
+      } else {
+        return new HttpException('Product not found', HttpStatus.NOT_FOUND);
+      }
     }
   }
 }
