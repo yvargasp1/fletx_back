@@ -10,7 +10,7 @@ import { SalesModule } from 'src/sales/sales.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product]),
-    CategoriesModule,
+    forwardRef(() => CategoriesModule),
     forwardRef(() => SalesModule),
   ],
   controllers: [ProductsController],
