@@ -23,47 +23,44 @@ export class ProductsService {
     }
   }
 
-  findAll(sort: any, lte: any, gte: any,category:any) {
-    console.log(sort,lte,gte)
-    if (sort && !lte && !gte) {
-      return this.productRepo
-        .createQueryBuilder('product')
-        .orderBy(`product.${sort}`, 'ASC')
-        .getMany();
+  findAll(sort: any, category: any, order: any) {
+    let categories = [];
+    console.log(order,sort)
+    if (category) {
+      categories = category.split(',');
+      console.log(categories);
     }
-     if (lte && gte && !sort) {
-       console.log('order gt lt');
-       return this.productRepo
-         .createQueryBuilder('product')
-         .where(`product.price <= :lte`, { lte })
-         .andWhere(`product.price >= :gte`, { gte })
-         .orderBy(`product.price`, 'ASC')
-         .getMany();
-     }
+    if (sort && !categories.length && order) {
+      if ((order == 'ASC')) {
+        return this.productRepo
+          .createQueryBuilder('product')
+          .orderBy(`product.${sort}`, 'ASC')
+          .getMany();
+      }
+      if ((order == 'DESC')) {
+        return this.productRepo
+          .createQueryBuilder('product')
+          .orderBy(`product.${sort}`, 'DESC')
+          .getMany();
+      }
+    }
 
-    if (lte && gte && sort && !category)  {
-      console.log('order gt lt')
-      return this.productRepo
-        .createQueryBuilder('product')
-        .where(`product.price <= :lte`, { lte })
-        .andWhere(`product.price >= :gte`, { gte })
-        .orderBy(`product.${sort}`, 'ASC')
-        .getMany();
-    }
-       if (lte && gte && sort && category) {
-         console.log('order category');
-         return this.productRepo
-           .createQueryBuilder('product')
-           .where(`product.price <= :lte`, { lte })
-           .andWhere(`product.price >= :gte`, { gte })
-           .andWhere(`product.category_id = :category`, { category })
-           .orderBy(`product.${sort}`, 'ASC')
-           .getMany();
-       }
-    if (!sort && !lte && !gte) {
-      return this.productRepo.find({
-        relations: ['category'],
-      });
+    if (category.length && sort && order) {
+      console.log(category, category.length);
+      if ((order == 'ASC')) {
+        return this.productRepo
+          .createQueryBuilder('product')
+          .where(`product.category_id IN (:...categories)`, { categories })
+          .orderBy(`product.${sort}`, 'ASC')
+          .getMany();
+      }
+      if ((order == 'DESC')) {
+        return this.productRepo
+          .createQueryBuilder('product')
+          .where(`product.category_id IN (:...categories)`, { categories })
+          .orderBy(`product.${sort}`, 'DESC')
+          .getMany();
+      }
     }
   }
 

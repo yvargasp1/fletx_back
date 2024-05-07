@@ -58,8 +58,12 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@Query('sort') sort: any , @Query('lte') lte :any ,@Query('gte') gte:any , @Query('category') category:any) {
-    return this.productsService.findAll(sort,lte,gte,category);
+  findAll(
+    @Query('sort') sort: any,
+    @Query('category') category: any,
+    @Query('order') order: any,
+  ) {
+    return this.productsService.findAll(sort, category,order);
   }
 
   @Get('/order')
